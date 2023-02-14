@@ -22,6 +22,9 @@ namespace MSMQ_Subscriber_Process.ViewModel
             RetrievedWellDataModels = new ObservableCollection<WellDataModel>();
             RetrieveWellCommandAction();
         }
+        //readonly string publicQueuePath = "FormatName:DIRECT=OS:LocalSystem\\Public$\\PublicMsmq";
+        readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
+
         /// <summary>
         /// This method connects to queue and listens for incoming data( well data) from 
         /// the queue using the ReceiveCompleted event handled by the delegate eventHandler 
@@ -30,7 +33,7 @@ namespace MSMQ_Subscriber_Process.ViewModel
         /// </summary>
         public void RetrieveWellCommandAction()
         {
-            MessageQueue queue = new MessageQueue(@".\private$\MSMQ_MessagingApp");
+            MessageQueue queue = new(privateQueuePath);
             queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
             queue.BeginReceive();
         }
