@@ -4,6 +4,8 @@ using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.DirectoryServices;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +24,10 @@ namespace MSMQ_Subscriber_Process.ViewModel
             RetrievedWellDataModels = new ObservableCollection<WellDataModel>();
             RetrieveWellCommandAction();
         }
-        //readonly string publicQueuePath = "FormatName:DIRECT=OS:LocalSystem\\Public$\\PublicMsmq";
-        readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
+        
+        //readonly string publicQueuePath = "FormatName:DIRECT=TCP:192.168.1.151:1801\\Public$\\PublicMsmq";
+        //readonly string publicQueuePath = "FormatName:PUBLIC=PublicMsmq@192.168.1.151:1801";
+        //readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
 
         /// <summary>
         /// This method connects to queue and listens for incoming data( well data) from 
@@ -33,7 +37,29 @@ namespace MSMQ_Subscriber_Process.ViewModel
         /// </summary>
         public void RetrieveWellCommandAction()
         {
-            MessageQueue queue = new(privateQueuePath);
+            // Define the name of the queue to search for
+            string queueName = "publicmsmq";
+
+            // Define the DSI query to search for the queue
+            string query = "(&(objectCategory=msmqQueueAlias)(objectClass=msmqQueueAlias)(cn=" + queueName + "))";
+
+            // Set the scope of the search to the entire domain
+            DirectorySearcher searcher = new(new DirectoryEntry("LDAP://" + Domain.GetComputerDomain().Name));
+
+            // Set the properties to retrieve from the search results
+            searcher.PropertiesToLoad.Add("msmqQueueFormatName");
+
+            // Set the filter to the DSI query
+            searcher.Filter = query;
+
+            // Perform the search and retrieve the format name of the queue
+            SearchResult result = searcher.FindOne();
+            string formatName = (string)result.Properties["msmqQueueFormatName"][0];
+
+            // Create a MessageQueue object to represent the queue
+            MessageQueue queue = new(formatName);
+
+            //MessageQueue queue = new(publicQueuePath);
             queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
             queue.BeginReceive();
         }
