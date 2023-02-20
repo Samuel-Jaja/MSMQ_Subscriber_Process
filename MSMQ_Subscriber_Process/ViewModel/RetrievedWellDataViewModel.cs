@@ -15,19 +15,15 @@ namespace MSMQ_Subscriber_Process.ViewModel
     {
         public RetrievedWellDataViewModel()
         {
+            machineName =Environment.MachineName;
             RetrievedWellDataModels = new ObservableCollection<WellDataModel>();
             RetrieveWellCommandAction();
         }
-        //string publicQueueName = "publicmsmq";
-
-        //MODIFIIY FOR SERVER(SUBSCRIBER) 
-        //readonly string publicQueuePath = "FormatName:DIRECT=OS:<cclng-pc5188>\\public$\\publicmsmq";
-        //readonly string publicQueuePath = "FormatName:DIRECT=TCP:192.168.1.151\\PUBLIC$\\publicmsmq";
-        readonly string publicQueuePath = "FormatName:DIRECT=OS:CCLNG-PC5188.svr.cyphercrescent.com\\publicmsmq";
-        
-        //readonly string publicQueuePath = "FormatName:PUBLIC=PublicMsmq@192.168.1.151:1801";
+        //readonly string publicQueuePath = "FormatName:DIRECT=OS:CCLNG-PC5188.svr.cyphercrescent.com\\publicmsmq";
         //readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
-
+        private readonly string machineName;
+        readonly string queuePublicPath = @"\publicmsmq";
+        private string GetMachinePublicQueuePath() => $"{machineName}{queuePublicPath}";
         /// <summary>
         /// This method connects to queue and listens for incoming data( well data) from 
         /// the queue using the ReceiveCompleted event handled by the delegate eventHandler 
@@ -36,31 +32,7 @@ namespace MSMQ_Subscriber_Process.ViewModel
         /// </summary>
         public void RetrieveWellCommandAction()
         {
-            //// Define the name of the queue to search for
-            //string queueName = "publicmsmq";
-
-            //// Define the DSI query to search for the queue
-            //string query = "(&(objectCategory=msmqQueueAlias)(objectClass=msmqQueueAlias)(cn=" + queueName + "))";
-
-            //// Set the scope of the search to the entire domain
-            //DirectorySearcher searcher = new(new DirectoryEntry("LDAP://" + Domain.GetComputerDomain().Name));
-
-            //// Set the properties to retrieve from the search results
-            //searcher.PropertiesToLoad.Add("msmqQueueFormatName");
-
-            //// Set the filter to the DSI query
-            //searcher.Filter = query;
-
-            //// Perform the search and retrieve the format name of the queue
-            //SearchResult? result = searcher.FindOne();
-
-            //string formatName = (string)result.Properties["msmqQueueFormatName"][0];
-            ////string formatName = "FormatName:DIRECT = TCP:192.168.1.151:1801\\Public$\\PublicMsmq";
-
-            //// Create a MessageQueue object to represent the queue
-            //MessageQueue queue = new(formatName);
-
-            MessageQueue queue = new(publicQueuePath);
+            MessageQueue queue = new(GetMachinePublicQueuePath());
             queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
             queue.BeginReceive();
         }
