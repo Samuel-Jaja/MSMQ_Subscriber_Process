@@ -19,20 +19,32 @@ namespace MSMQ_Subscriber_Process.ViewModel
             RetrievedWellDataModels = new ObservableCollection<WellDataModel>();
             RetrieveWellCommandAction();
         }
+<<<<<<< HEAD
         //readonly string publicQueuePath = "FormatName:DIRECT=OS:CCLNG-PC5188.svr.cyphercrescent.com\\publicmsmq";
         //readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
         private readonly string machineName;
         readonly string queuePublicPath = @"\publicmsmq";
         private string GetMachinePublicQueuePath() => $"{machineName}{queuePublicPath}";
+=======
+        
+        //readonly string publicQueuePath = "CCLNG-PC745.svr.cyphercrescent.com\\cclng-pc745\\publicmsmq";
+        //readonly string publicQueuePath = @"CCLNG-PC511\publicmsmq";
+        readonly string publicQueuePath = @"CCLNG-PC5188\publicmsmq";
+
+>>>>>>> 030eebbf20be1d5ad00105df83f64251a9b7bfd5
         /// <summary>
         /// This method connects to queue and listens for incoming data( well data) from 
         /// the queue using the ReceiveCompleted event handled by the delegate eventHandler 
         /// which holds a referecnce to OnReceiveCompleted.
         /// BeginReceive initiates asynchronous receive operation.
         /// </summary>
-        public void RetrieveWellCommandAction()
+        public void RetrieveWellCommandAction()  
         {
+<<<<<<< HEAD
             MessageQueue queue = new(GetMachinePublicQueuePath());
+=======
+            MessageQueue queue = new MessageQueue(publicQueuePath);
+>>>>>>> 030eebbf20be1d5ad00105df83f64251a9b7bfd5
             queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
             queue.BeginReceive();
         }
