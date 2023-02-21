@@ -17,21 +17,21 @@ namespace MSMQ_Subscriber_Process
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            //PowerShell powerShell = PowerShell.Create();
-            //powerShell.AddScript(@"
-            //# Check if MSMQ is installed
-            //if ((Get-WindowsFeature MSMQ).Installed -ne $true) {
-            //    # Install MSMQ
-            //    Install-WindowsFeature MSMQ -IncludeManagementTools
+            //PowerShell powershell = PowerShell.Create();
+            //powershell.AddScript(@"
+            //# check if msmq is installed
+            //if ((get-windowsfeature msmq).installed -ne $true) {
+            //    # install msmq
+            //    install-windowsfeature msmq -includemanagementtools
 
-            //    # Enable MSMQ
-            //    Enable-WindowsOptionalFeature -FeatureName MSMQ-Server -All
-            //    Enable-WindowsOptionalFeature -FeatureName MSMQ-Container -All
+            //    # enable msmq
+            //    enable-windowsoptionalfeature -featurename msmq-server -all
+            //    enable-windowsoptionalfeature -featurename msmq-container -all
             //}
-            //# Restart the MSMQ service
-            //Restart-Service MSMQ
+            //# restart the msmq service
+            //restart-service msmq
             //");
-            //powerShell.Invoke();
+            //powershell.Invoke();
         }
     }
 }
