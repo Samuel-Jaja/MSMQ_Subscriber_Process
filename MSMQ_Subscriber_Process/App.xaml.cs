@@ -17,8 +17,8 @@ namespace MSMQ_Subscriber_Process
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            //PowerShell powershell = PowerShell.Create();
-            //powershell.AddScript(@"
+            //powershell powershell = powershell.create();
+            //powershell.addscript(@"
             //# check if msmq is installed
             //if ((get-windowsfeature msmq).installed -ne $true) {
             //    # install msmq
@@ -31,7 +31,7 @@ namespace MSMQ_Subscriber_Process
             //# restart the msmq service
             //restart-service msmq
             //");
-            //powershell.Invoke();
+            //powershell.invoke();
         }
     }
 }
