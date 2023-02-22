@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Diagnostics;
-using System.Linq;
-using System.Management.Automation;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace MSMQ_Subscriber_Process
@@ -18,26 +12,40 @@ namespace MSMQ_Subscriber_Process
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            //powershell powershell = powershell.create();
-            //powershell.addscript(@"
-            //# check if msmq is installed
-            //if ((get-windowsfeature msmq).installed -ne $true) {
-            //    # install msmq
-            //    install-windowsfeature msmq -includemanagementtools
+            ActivateMsmq();
+        }
 
-            //    # enable msmq
-            //    enable-windowsoptionalfeature -featurename msmq-server -all
-            //    enable-windowsoptionalfeature -featurename msmq-container -all
-            //}
-            //# restart the msmq service
-            //restart-service msmq
-            //");
-            //powershell.invoke();
-        
-            string scriptPath = @"C:\Helper\automate_publicmsmq.ps1";
-            ProcessStartInfo psi = new ProcessStartInfo("powershell.exe", "-ExecutionPolicy Bypass -File \"" + scriptPath + "\"");
-            psi.WindowStyle = ProcessWindowStyle.Hidden;
-            Process.Start(psi);
+        private static void ActivateMsmq()
+        {
+            // Path to the PowerShell script file
+            string scriptFilePath = @".\automate_publicmsmq.ps1";
+
+            // Create the PowerShell process start info
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = "powershell.exe",
+                Arguments = $"-ExecutionPolicy Bypass -File \"{scriptFilePath}\"",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
+
+            // Start the PowerShell process
+            using (Process process = new Process())
+            {
+                process.StartInfo = startInfo;
+                process.Start();
+
+                // Read the output and error streams
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+
+                process.WaitForExit();
+
+                // Display the output and error
+                Console.WriteLine(output);
+                Console.WriteLine(error);
+            }
         }
     }
 }

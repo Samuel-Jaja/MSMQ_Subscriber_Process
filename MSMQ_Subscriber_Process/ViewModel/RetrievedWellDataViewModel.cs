@@ -15,16 +15,17 @@ namespace MSMQ_Subscriber_Process.ViewModel
     {
         public RetrievedWellDataViewModel()
         {
-            //machineName =Environment.MachineName;
+            machineName = Environment.MachineName;
             RetrievedWellDataModels = new ObservableCollection<WellDataModel>();
             RetrieveWellCommandAction();
         }
-        //readonly string publicQueuePath = "FormatName:DIRECT=OS:CCLNG-PC5188.svr.cyphercrescent.com\\publicmsmq";
-        //readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
-        //private readonly string  machineName;
         
-        readonly string queuePublicPath = @"CCLNG-PC5188\publicmsmq";
-        //private string GetMachinePublicQueuePath() => $"{machineName}{queuePublicPath}";
+        private readonly string machineName;
+        readonly string queuePublicPath = @"\publicmsmq";
+        readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
+        //readonly string queuePublicPath = @"CCLNG-PC5188\publicmsmq";
+
+        private string GetMachinePublicQueuePath() => $"{machineName}{queuePublicPath}";
         /// <summary>
         /// This method connects to queue and listens for incoming data( well data) from 
         /// the queue using the ReceiveCompleted event handled by the delegate eventHandler 
@@ -33,11 +34,29 @@ namespace MSMQ_Subscriber_Process.ViewModel
         /// </summary>
         public void RetrieveWellCommandAction()  
         {
-            MessageQueue queue = new(queuePublicPath);
-            queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
-            //queue.PeekCompleted += new PeekCompletedEventHandler(OnPeekCompleted);
-            queue.BeginReceive();
-            //queue.BeginPeek();
+            try
+            {
+                if (MessageQueue.Exists(GetMachinePublicQueuePath()))
+                {
+                    MessageQueue queue = new(GetMachinePublicQueuePath());
+                    queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
+                    //queue.  PeekCompleted += new PeekCompletedEventHandler(OnPeekCompleted);
+                    queue.BeginReceive();
+                    //queue.BeginPeek();
+                }
+                else
+                {
+                    MessageQueue queue = new(privateQueuePath);
+                    queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
+                    //queue.  PeekCompleted += new PeekCompletedEventHandler(OnPeekCompleted);
+                    queue.BeginReceive();
+                    //queue.BeginPeek();
+                }
+            }
+            catch (MessageQueueException ex)
+            {
+                MessageBox.Show("An error occured while checking the queue to fetch data:" + ex.Message);
+            }
         }
         /// <summary>
         /// This method ensures the message is retrived from queue and also left in the queue
@@ -54,9 +73,8 @@ namespace MSMQ_Subscriber_Process.ViewModel
             {
                 RetrievedWellDataModels.Add(wellDatamodel);
             });
-            ((MessageQueue)sender).BeginPeek();
-            //queue.BeginPeek();
-            
+            //((MessageQueue)sender).BeginPeek();
+            queue.BeginPeek();
         }
 
         /// <summary>
