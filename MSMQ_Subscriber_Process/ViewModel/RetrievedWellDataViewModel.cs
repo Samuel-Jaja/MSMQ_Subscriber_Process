@@ -22,6 +22,7 @@ namespace MSMQ_Subscriber_Process.ViewModel
         //readonly string publicQueuePath = "FormatName:DIRECT=OS:CCLNG-PC5188.svr.cyphercrescent.com\\publicmsmq";
         //readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
         //private readonly string  machineName;
+        
         readonly string queuePublicPath = @"CCLNG-PC5188\publicmsmq";
         //private string GetMachinePublicQueuePath() => $"{machineName}{queuePublicPath}";
         /// <summary>
@@ -34,8 +35,30 @@ namespace MSMQ_Subscriber_Process.ViewModel
         {
             MessageQueue queue = new(queuePublicPath);
             queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
+            //queue.PeekCompleted += new PeekCompletedEventHandler(OnPeekCompleted);
             queue.BeginReceive();
+            //queue.BeginPeek();
         }
+        /// <summary>
+        /// This method ensures the message is retrived from queue and also left in the queue
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnPeekCompleted(object sender, PeekCompletedEventArgs e)
+        {
+            MessageQueue queue = (MessageQueue)sender;
+            queue.Formatter = new XmlMessageFormatter(new Type[] { typeof(WellDataModel) });
+            Message message = queue.EndPeek(e.AsyncResult);
+            WellDataModel wellDatamodel = (WellDataModel)message.Body;
+            Application.Current.Dispatcher.BeginInvoke(() =>
+            {
+                RetrievedWellDataModels.Add(wellDatamodel);
+            });
+            ((MessageQueue)sender).BeginPeek();
+            //queue.BeginPeek();
+            
+        }
+
         /// <summary>
         /// This method represents a callback for an asynchronous receive operation on a message queue.
         /// The method responds to the delegate handler, it casts the sender object recieved to MessageQueue type, deserializes format.
