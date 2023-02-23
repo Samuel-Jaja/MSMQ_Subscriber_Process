@@ -13,9 +13,9 @@ This Application reads the machine name, runs a PowerShell Script to activate MS
 **Prism Core 8.1.97**
 
 # How to Run the Project: 
-* Clone the Project
+* Clone the Project along side with Subscriber App https://github.com/Samuel-Jaja/MSMQ_Publisher_Process
 * Run with Visual Studio 2022. 
-* The executable file (.exe) will be published soon for you to download.
+* The executable file (.exe) will be published soon for you to download (Also download for Publisher from same link above).
 
 
 # Badges
