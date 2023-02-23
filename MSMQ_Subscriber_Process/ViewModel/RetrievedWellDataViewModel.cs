@@ -3,6 +3,7 @@ using MSMQ_Subscriber_Process.Model;
 using Prism.Mvvm;
 using System;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Windows;
 
 namespace MSMQ_Subscriber_Process.ViewModel
@@ -19,18 +20,17 @@ namespace MSMQ_Subscriber_Process.ViewModel
             RetrievedWellDataModels = new ObservableCollection<WellDataModel>();
             RetrieveWellCommandAction();
         }
-        
         private readonly string machineName;
-        readonly string queuePublicPath = @"\publicmsmq";
-        readonly string privateQueuePath = @".\private$\MSMQ_MessagingApp";
-        //readonly string queuePublicPath = @"CCLNG-PC5188\publicmsmq";
+        readonly string publicQueuePath = ConfigurationManager.AppSettings["PublicQueuePath"] ?? "default value";
+        readonly string privateQueuePath = ConfigurationManager.AppSettings["PrivateQueuePath"] ?? "default value";
+        private string GetMachinePublicQueuePath() => $"{machineName}{publicQueuePath}";
 
-        private string GetMachinePublicQueuePath() => $"{machineName}{queuePublicPath}";
         /// <summary>
-        /// This method connects to queue and listens for incoming data( well data) from 
-        /// the queue using the ReceiveCompleted event handled by the delegate eventHandler 
+        /// This method retrives data from public or private queues.
+        /// This method connects and listens to the queue for incoming data( well data) from 
+        /// using the ReceiveCompleted Event, handled by the delegate EventHandler 
         /// which holds a referecnce to OnReceiveCompleted.
-        /// BeginReceive initiates asynchronous receive operation.
+        /// BeginReceive initiates asynchronous receive operation it leaves no data in queue.
         /// </summary>
         public void RetrieveWellCommandAction()  
         {
@@ -40,41 +40,19 @@ namespace MSMQ_Subscriber_Process.ViewModel
                 {
                     MessageQueue queue = new(GetMachinePublicQueuePath());
                     queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
-                    //queue.  PeekCompleted += new PeekCompletedEventHandler(OnPeekCompleted);
                     queue.BeginReceive();
-                    //queue.BeginPeek();
                 }
                 else
                 {
                     MessageQueue queue = new(privateQueuePath);
                     queue.ReceiveCompleted += new ReceiveCompletedEventHandler(OnReceiveCompleted);
-                    //queue.  PeekCompleted += new PeekCompletedEventHandler(OnPeekCompleted);
                     queue.BeginReceive();
-                    //queue.BeginPeek();
                 }
             }
             catch (MessageQueueException ex)
             {
                 MessageBox.Show("An error occured while checking the queue to fetch data:" + ex.Message);
             }
-        }
-        /// <summary>
-        /// This method ensures the message is retrived from queue and also left in the queue
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnPeekCompleted(object sender, PeekCompletedEventArgs e)
-        {
-            MessageQueue queue = (MessageQueue)sender;
-            queue.Formatter = new XmlMessageFormatter(new Type[] { typeof(WellDataModel) });
-            Message message = queue.EndPeek(e.AsyncResult);
-            WellDataModel wellDatamodel = (WellDataModel)message.Body;
-            Application.Current.Dispatcher.BeginInvoke(() =>
-            {
-                RetrievedWellDataModels.Add(wellDatamodel);
-            });
-            //((MessageQueue)sender).BeginPeek();
-            queue.BeginPeek();
         }
 
         /// <summary>
@@ -108,6 +86,7 @@ namespace MSMQ_Subscriber_Process.ViewModel
             });
             queue.BeginReceive();
         }
+
         /// <summary>
         /// The retrievedWellDataModels is an observable collection
         /// (dynamic collection) that keeps the undelying model in sync  with the UI.
