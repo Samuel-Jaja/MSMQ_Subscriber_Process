@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MSMQ_Subscriber_Process.View"
         mc:Ignorable="d"
-         Title="RetrievedWellDataView" Height="530" Width="600">
+         Title="RetrievedWellDataView" Height="530" Width="600" MinWidth="600" MaxWidth="600" MinHeight="550" MaxHeight="550" WindowStartupLocation="CenterScreen">
 
     <Grid Background="CadetBlue">
         <Grid.RowDefinitions>
