@@ -7,7 +7,8 @@ on:
       - "subprocess/v*"
 
 env:
-  PROJECT_PATH: ./MSMQ_Subscriber_Process.csproj
+  #PROJECT_PATH: ./MSMQ_Subscriber_Process.csproj
+   PROJECT_PATH: ${{ github.workspace }}/MSMQ_Subscriber_Process.csproj
 
 
 jobs:
