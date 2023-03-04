@@ -7,7 +7,8 @@ on:
       - "subprocess/v*"
 
 env:
-  PROJECT_PATH: './MSMQ_Subscriber_Process.csproj'
+  PROJECT_PATH: C:/Users/kazor/OneDrive/Desktop/SEPAL 2.x.x/SEPAL 2.x.x Sprint 4/MSMQ_Subscriber_Process/MSMQ_Subscriber_Process/MSMQ_Subscriber_Process.csproj
+
 
 jobs:
   Deploy:
