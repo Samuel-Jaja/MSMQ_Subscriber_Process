@@ -16,6 +16,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" FontSize="30" Text="CypherCrescent Resource"  FontWeight="Bold" HorizontalAlignment="Center"/>
+        <TextBlock Text="gideon at top left"/>
         <ListView Grid.Row="1" FontSize="16" Height="350" FontWeight="DemiBold" ItemsSource="{Binding RetrievedWellDataModels}" HorizontalAlignment="Center" HorizontalContentAlignment="Center">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
